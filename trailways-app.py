@@ -1,5 +1,5 @@
 import streamlit as st
-import request
+import requests
 import time
 import pandas as pd
 
