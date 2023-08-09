@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 # Base URL without the dynamic parameters (serviceDate and departureTime)
-BASE_URL = "https://services.saucontds.com/forecasting-services/configuredTripStatus.ws?departureStopExternalId=7944277&destinationStopExternalId=7944280&source=desktop&key=nUB*IQliXkm6Wh8cKIGi0LboTLCpsb1VfTTDMDank42jGJbDhHl59wDP7C38c5QDGn-0bTS0LhZBxnltjBQhdCA5517smVEBowRe20"
+BASE_URL = "https://services.saucontds.com/forecasting-services/configuredTripStatus.ws?departureStopExternalId=7944277&destinationStopExternalId=7944280&source=desktop&key=ohRVPWJvRFazQjINZr2B7dhFBZlUPBAau7evO7gtyHlEBIE99Fb0UwcC*Kv2FpCNjjVbquUV3XZ5CipI4RJwM*xG*oJKXz3N2hsY20"
 
 HEADERS = {
     #... [headers remain unchanged]
