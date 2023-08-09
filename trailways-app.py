@@ -1,5 +1,4 @@
 import streamlit as st
-import folium
 from folium.plugins import FastMarkerCluster
 import requests
 import time
