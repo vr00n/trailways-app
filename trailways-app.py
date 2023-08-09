@@ -29,7 +29,7 @@ def display_map(data):
     
     # Rendering the map
     map_data = pd.DataFrame([current_position])
-    st.map(map_data)
+    #st.map(map_data)
 
     # If you'd also like to display the path, you can do:
     st.map(df_path)
