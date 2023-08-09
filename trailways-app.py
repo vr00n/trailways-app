@@ -25,7 +25,7 @@ def display_map(data):
     
     # Extracting the vehicle's path
     path_data = data['coachPosition']['vehiclePath']
-    df_path = pd.DataFrame(path_data)
+    df_path = pd.DataFrame(path_data).rename(columns={"lat": "latitude", "lng": "longitude"})
     
     # Rendering the map
     map_data = pd.DataFrame([current_position])
