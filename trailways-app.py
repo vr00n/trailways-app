@@ -3,59 +3,49 @@ import requests
 import time
 import pandas as pd
 
-# Base URL without the dynamic parameters (serviceDate and departureTime)
-BASE_URL = "https://services.saucontds.com/forecasting-services/configuredTripStatus.ws?departureStopExternalId=7944277&destinationStopExternalId=7944280&source=desktop&key=ohRVPWJvRFazQjINZr2B7dhFBZlUPBAau7evO7gtyHlEBIE99Fb0UwcC*Kv2FpCNjjVbquUV3XZ5CipI4RJwM*xG*oJKXz3N2hsY20"
+BASE_URL = "https://services.saucontds.com/forecasting-services/configuredTripStatus.ws?departureStopExternalId=7944277&destinationStopExternalId=7944280&source=desktop"
+API_KEY_URL = "https://services.saucontds.com/forecasting-services/public/publicSchedule/json?companyLocationID=122679566&encryptedUserId=kWUGO2NlflrXUj4Uf8KQzbDT-PoiE3XZ0Hty6ZzkdNJnVTev6hDSVR-NfBe5GLNqMq40Tt3QIvTB5VP2m3gXyTAOvDMx*nhr5r7*20"
 
 HEADERS = {
-    #... [headers remain unchanged]
+    # Your headers here (kept unchanged)
 }
 
-# Function to fetch data
+def retrieve_api_key():
+    response = requests.get(API_KEY_URL)
+    data = response.json()
+    return data["key"]
+
 def fetch_data(service_date, departure_time):
-    # Construct the full URL using the user's input
-    url = f"{BASE_URL}&serviceDate={service_date}&departureTime={departure_time}"
+    key = retrieve_api_key()
+    url = f"{BASE_URL}&serviceDate={service_date}&departureTime={departure_time}&key={key}"
     response = requests.get(url, headers=HEADERS)
     return response.json()
 
-# Display map using st.map()
 def display_map(data):
-    # Extracting the vehicle's current position
-    current_position = {
-        "latitude": data['coachPosition']['latitude'],
-        "longitude": data['coachPosition']['longitude']
-    }
-    
-    # Extracting the vehicle's path and renaming columns
-    path_data = data['coachPosition']['vehiclePath']
-    df_path = pd.DataFrame(path_data).rename(columns={"lat": "latitude", "lng": "longitude"})
-    
-    # Rendering the map
-    map_data = pd.DataFrame([current_position])
-    st.map(map_data)
-
-    # Displaying the path:
+    vehicle_path = data['coachPosition']['vehiclePath']
+    df_path = pd.DataFrame(vehicle_path)
+    df_path.columns = ['lat', 'lon']  # Rename columns to be recognized by st.map
     st.map(df_path)
 
-# Main Streamlit app
 def main():
     st.title("Bus Tracker")
-    
-    # User inputs for service date and departure time
-    service_date = st.date_input("Service Date", value=pd.to_datetime("2023-08-09"))
-    departure_time = st.time_input("Departure Time", value=pd.to_datetime("07:00").time())
-    
-    # Format the user input for URL
-    formatted_date = service_date.strftime('%Y-%m-%d')
-    formatted_time = departure_time.strftime('%I:%M %p')
+
+    # Input for date and time
+    service_date = st.sidebar.date_input("Service Date")
+    departure_time = st.sidebar.time_input("Departure Time")
+
+    # Display a countdown timer for key retrieval
+    countdown_time = 600  # 10 minutes in seconds
+    st.sidebar.header("Next Key Retrieval In:")
+    timer_text = st.sidebar.empty()
+    for remaining_seconds in range(countdown_time, 0, -1):
+        minutes, seconds = divmod(remaining_seconds, 60)
+        timer_text.text(f"{minutes:02}:{seconds:02}")
+        time.sleep(1)
 
     # Fetch and display data
-    data = fetch_data(formatted_date, formatted_time)
+    data = fetch_data(service_date.strftime('%Y-%m-%d'), departure_time.strftime('%I:%M %p'))
     display_map(data)
-
-    # Display last updated time and refresh button
-    st.write(f"Last updated at: {time.strftime('%H:%M:%S')}")
-    if st.button("Refresh Now!"):
-        st.experimental_rerun()
 
 if __name__ == "__main__":
     main()
